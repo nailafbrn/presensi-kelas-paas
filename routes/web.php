@@ -1,16 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PresensiController;
-
-// Endpoint Health Check (Syarat wajib ada)
-Route::get('/kesehatan', [PresensiController::class, 'kesehatan']);
-
-// Endpoint Presensi
-Route::get('/presensi', [PresensiController::class, 'index']);
-Route::post('/presensi', [PresensiController::class, 'store']);
-Route::get('/presensi/rekap/{mata_kuliah}', [PresensiController::class, 'rekap']);
+use App\Models\Presensi;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
-    return view('welcome');
+    // Ambil data terbaru dari database untuk ditampilkan di tabel
+    $semuaPresensi = Presensi::latest()->get();
+    return view('welcome', compact('semuaPresensi'));
+});
+
+// Route khusus untuk menerima input dari formulir web
+Route::post('/simpan-presensi', function (Request $request) {
+    Presensi::create($request->all());
+    return redirect('/')->with('sukses', 'Data presensi berhasil disimpan!');
 });
